@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,10 +7,19 @@ import { motion } from "framer-motion";
 
 const TELEGRAM_BOT_USERNAME = "youssofxxmoussabot";
 
+function isInIframe() {
+  try {
+    return window.self !== window.top;
+  } catch (e) {
+    return true;
+  }
+}
+
 const Auth = () => {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [inIframe] = useState(isInIframe);
 
   useEffect(() => {
     if (!loading && session) {
@@ -60,9 +69,9 @@ const Auth = () => {
     };
   }, [handleTelegramAuth]);
 
-  // Load Telegram widget script
+  // Load Telegram widget script (only outside iframe)
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || inIframe) return;
     containerRef.current.innerHTML = "";
 
     const script = document.createElement("script");
@@ -75,7 +84,7 @@ const Auth = () => {
     script.setAttribute("data-radius", "12");
     script.async = true;
     containerRef.current.appendChild(script);
-  }, []);
+  }, [inIframe]);
 
   if (loading) {
     return (
@@ -106,10 +115,26 @@ const Auth = () => {
           </p>
         </div>
 
-        <div
-          ref={containerRef}
-          className="flex items-center justify-center min-h-[50px]"
-        />
+        {inIframe ? (
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-xs text-muted-foreground text-center max-w-xs">
+              Telegram login requires opening in a new tab due to browser security.
+            </p>
+            <a
+              href={window.location.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#54a9eb] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#4a96d4]"
+            >
+              Open in new tab to login
+            </a>
+          </div>
+        ) : (
+          <div
+            ref={containerRef}
+            className="flex items-center justify-center min-h-[50px]"
+          />
+        )}
 
         <p className="text-[10px] text-muted-foreground/50 text-center max-w-xs">
           By signing in, your chats will be saved and synced across sessions.
