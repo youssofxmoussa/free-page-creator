@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
-const TELEGRAM_BOT_USERNAME = "youssefxmoussabot";
+const TELEGRAM_BOT_USERNAME = "youssofxxmoussabot";
 
 const Auth = () => {
   const { session, loading } = useAuth();
