@@ -25,7 +25,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          title?: string
+          title: string
           updated_at?: string
           user_id: string
         }
@@ -51,13 +51,13 @@ export type Database = {
         }
         Insert: {
           audio_url?: string | null
-          content?: string
+          content: string
           conversation_id: string
           created_at?: string
           generated_image?: string | null
           id?: string
           image?: string | null
-          role?: string
+          role: string
         }
         Update: {
           audio_url?: string | null
